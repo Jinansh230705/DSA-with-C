@@ -18,10 +18,13 @@ void towerofHanoi(int numDisks, char source, char auxiliary, char destination) {
     towerofHanoi(numDisks-1, auxiliary, source, destination);
 }
 
-int main() {
-    int numDisks;
+void do(){
+	 int numDisks;
     printf("Enter the number of disks: ");
     scanf("%d", &numDisks); 
     towerofHanoi(numDisks, 'A', 'B', 'C'); 
+}
+int main() {
+    do();
     return 0;
 }
