@@ -1,21 +1,80 @@
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
-void towerofHanoi(int numDisks, char source, char auxiliary, char destination) {
-    if (numDisks == 1) {
-        printf("Move disk 1 from %c to %c\n", source, destination);
+#define MAX 100
+
+typedef struct {
+    int data[MAX];
+    int top;
+} Stack;
+
+void initStack(Stack* stack) {
+    stack->top = -1;
+}
+
+int isEmpty(Stack* stack) {
+    return stack->top == -1;
+}
+
+int isFull(Stack* stack) {
+    return stack->top == MAX - 1;
+}
+
+void push(Stack* stack, int value) {
+    if (isFull(stack)) {
+        printf("Stack Overflow\n");
         return;
     }
-    
-    towerofHanoi(numDisks-1, source, destination, auxiliary);
-    printf("Move disk %d from %c to %c\n", numDisks, source, destination);
-    
-    towerofHanoi(numDisks-1, auxiliary, source, destination);
+    stack->data[++stack->top] = value;
+}
+
+int pop(Stack* stack) {
+    if (isEmpty(stack)) {
+        printf("Stack Underflow\n");
+        return 0;
+    }
+    return stack->data[stack->top--];
+}
+
+int evaluatePostfix(char* postfix) {
+    Stack stack;
+    initStack(&stack);
+    int i, operand1, operand2, result;
+    for (i = 0; i < strlen(postfix); i++) {
+        if (postfix[i] == ' ') continue;
+        if (postfix[i] >= '0' && postfix[i] <= '9') {
+            push(&stack, postfix[i] - '0');
+        } else {
+            operand2 = pop(&stack);
+            operand1 = pop(&stack);
+            switch (postfix[i]) {
+                case '+':
+                    result = operand1 + operand2;
+                    break;
+                case '-':
+                    result = operand1 - operand2;
+                    break;
+                case '*':
+                    result = operand1 * operand2;
+                    break;
+                case '/':
+                    result = operand1 / operand2;
+                    break;
+            }
+            push(&stack, result);
+        }
+    }
+    return pop(&stack);
 }
 
 int main() {
-    int numDisks;
-    printf("Enter the number of disks: ");
-    scanf("%d", &numDisks); 
-    towerofHanoi(numDisks, 'A', 'B', 'C'); 
+     char postfix[100];
+    printf("Enter postfix expression: \n");
+    fgets(postfix, 100, stdin);
+    postfix[strcspn(postfix, "\n")] = 0; // remove trailing newline
+    int result = evaluatePostfix(postfix);
+    printf("Result: %d\n", result);
     return 0;
 }
+
